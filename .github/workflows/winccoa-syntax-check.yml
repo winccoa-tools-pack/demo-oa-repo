@@ -24,14 +24,14 @@ jobs:
           password: ${{ secrets.GHCR_PAT != '' && secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Pull WinCC OA image
-        run: docker pull ghcr.io/winccoa-tools-pack/winccoa:3.21
+        run: docker pull ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all
 
       - name: Run syntax check
         uses: ./.github/actions/winccoa-syntax-check
         with:
           path: "src/winccoa-ctrltf-UI"
-          winccoa-version: "3.21"
-          docker-image: "ghcr.io/winccoa-tools-pack/winccoa:3.21"
+          winccoa-version: "3.21.3"
+          docker-image: "ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all"
           fail-on-error: "true"
           mode: "all"
           integrity: "false"
