@@ -15,7 +15,7 @@ inputs:
   docker-image:
     description: "GHCR WinCC OA image to run the check in"
     required: false
-    default: "ghcr.io/winccoa-tools-pack/winccoa:latest"
+    default: "ghcr.io/winccoa-tools-pack/winccoa:3.21"
 
   winccoa-version:
     description: "WinCC OA version installed in the image (e.g. 3.20)"
