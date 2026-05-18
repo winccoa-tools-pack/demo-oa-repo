@@ -1,0 +1,389 @@
+V 14
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+PANEL,-1 -1 868 642 N "WF_PanelBackground" 0
+"main()
+{
+  treeTestProjects.addColumn(\"Name\");
+
+  treeTestProjects.setColumnWidthMode(0, TREE_WIDTH_STRETCH);
+  treeTestProjects.alternatingRowColors(TRUE);
+  treeTestProjects.animated(TRUE);
+}
+" 0
+ E E E E 1 -1 -1 0  10 0
+""0  1
+E "#uses \"classes/testFramework/testSuite/TfTestSuite\"
+
+TfTestSuite testSuite;
+
+//--------------------------------------------------------------------------------
+public setTestSuite(const TfTestSuite &suite)
+{
+  testSuite = suite;
+ // DebugTN(__FUNCTION__, testSuite.getId(), testSuite);
+  suiteCommonConfigRef.setId(testSuite.getId());
+  suiteCommonConfigRef.setName(testSuite.getName());
+  suiteCommonConfigRef.setDescription(testSuite.getDescription());
+
+  treeTestProjects.updatesEnabled(FALSE);
+  treeTestProjects.clear();
+  const dyn_anytype projects = testSuite.getProjectsList();
+
+  for (int i = 1; i <= dynlen(projects); i++)
+  {
+    anytype proj = projects[i];
+    string treeId = \"proj_\" + i;
+    addProjInList(proj, treeId, \"\");
+  }
+
+  addUserData(testSuite.getUserData());
+
+  expandFirstElement(\"\");
+
+  treeTestProjects.updatesEnabled(TRUE);
+}
+
+void expandFirstElement(string id)
+{
+  treeTestProjects.setSelectedItem(id, true);
+  dyn_string children = treeTestProjects.children(id);
+  if (children.count() > 0)
+  {
+    treeTestProjects.setOpen(id, true);
+    id = children.at(0);
+    expandFirstElement(id);
+  }
+}
+
+//--------------------------------------------------------------------------------
+void addProjInList(const anytype &proj, const string &treeId, const string &rootId)
+{
+  treeTestProjects.appendItem(rootId, treeId, \"\");
+
+  if (isA(proj, STRING_VAR))
+  {
+    treeTestProjects.setText(treeId, 0, proj);
+  }
+  else if (isA(proj, MAPPING_VAR))
+  {
+    treeTestProjects.setText(treeId, 0, proj[\"PROJECT_CONFIG\"]);
+  }
+  else if (isDynVar(proj))
+  {
+    // parallel projects
+    treeTestProjects.setText(treeId, 0, \"Parallel\");
+
+    for (int i = 1; i <= dynlen(proj); i++)
+    {
+      addProjInList(proj[i], treeId + \"_P_\" + i, treeId);
+    }
+  }
+}
+
+
+void addUserData(const anytype &userData)
+{
+  DebugTN(__FUNCTION__, userData);
+  shape sh = getShape(\"treeTestSuiteUserData\");
+  sh.updatesEnabled(FALSE);
+  sh.clear();
+
+  if (isNull(userData))
+  {
+    LAYOUT_GROUP57.visible(false);
+    PANEL_REF4.visible(false);
+    // hide it and do nothing
+    sh.updatesEnabled(TRUE);
+    return;
+  }
+
+
+  appendItem(\"\", \"\", userData, sh);
+  sh.updatesEnabled(TRUE);
+  LAYOUT_GROUP57.visible(true);
+  PANEL_REF4.visible(true);
+
+}
+
+string appendItem(const string &rootId, const string &name, const anytype &value, const shape &sh)
+{
+//   DebugTN(__FUNCTION__, rootId, name, value, sh);
+  string newId;
+
+  if (!name.isEmpty())
+    newId = rootId + \".\" + name;
+  else
+    newId = rootId;
+
+  if (!newId.isEmpty() && !treeTestManagers.itemExists(newId))
+    sh.appendItem(rootId, newId, name);
+
+  if (isDynVar(value))
+  {
+    for (int i = 1; i <= dynlen(value); i++)
+    {
+      appendItem(newId, name + \" [\" + i + \"]\", value[i], sh);
+    }
+  }
+  else if (isA(value, MAPPING_VAR))
+  {
+    for (int i = 1; i <= mappinglen(value); i++)
+    {
+      appendItem(newId,  mappingGetKey(value, i), mappingGetValue(value, i), sh);
+    }
+  }
+  else
+  {
+    sh.setText(newId, 1, (string)value);
+  }
+
+  return newId;
+}
+
+//--------------------------------------------------------------------------------
+void showProjInfo(string treeId)
+{
+  dyn_string children = treeTestProjects.children(treeId);
+  if (children.count() > 0)
+  {
+    treeId = children.at(0);
+    showProjInfo(treeId);
+    return; // paralelel project
+  }
+
+  string cfgId = treeTestProjects.getText(treeId, 0);
+  const string testprojCfgPath = testSuite.getTestProjCfgPath(cfgId);
+
+  TfTestProject proj;
+  proj.initFromJsonFile(testprojCfgPath);
+  proj.setTestSuiteId(testSuite.getId());
+
+  testProjRef.setProject(proj);
+}
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "WF"
+"dpi" "120"
+"pdpi" "141.951"
+1 1 0 0 0 0 1 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+1 146 18 "" 1
+0
+29 85
+"treeTestProjects"
+"WF"
+1 30 580 E E E 1 E 1 E N "WF_Text" E N "WF_PanelBackground" E E
+ E E
+96 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "300 -1"
+"sizePolicy" "Maximum Expanding"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  30 580 381 772
+10 TreeWidget
+1
+0 "selectionChanged" "(string id)"
+"  showProjInfo(id);"
+E1 154 20 "0" 56
+0
+1 181 22 "" 56
+0
+1 198 23 "" 1
+0
+29 145
+"treeTestSuiteUserData"
+"WF"
+1 210 320 E E E 1 E 1 E N "WF_Text" E N "WF_PanelBackground" E E
+ E E
+105 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+4
+"alternatingRowColors" "bool TRUE"
+"minimumSize" "-1 80"
+"sizePolicy" "Expanding Expanding"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  210 320 490.0000000000001 510
+10 TreeWidget
+0
+"main()
+{
+  treeTestSuiteUserData.addColumn(\"Name\");
+  treeTestSuiteUserData.addColumn(\"Value\");
+
+  treeTestSuiteUserData.setColumnWidthMode(1, TREE_WIDTH_STRETCH);
+//   treeTestSuiteUserData.setColumnWidthMode(2, TREE_WIDTH_MAXIMUM);
+  treeTestSuiteUserData.alternatingRowColors(TRUE);
+  treeTestSuiteUserData.animated(TRUE);
+}
+" 0
+29 202
+"testRunner_titleDescription"
+""
+1 42.99712297125995 50.74999999999852 E E E 1 E 1 E N "_3DText" E N "white" E E
+ E E
+106 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+10
+"text" "string Test-Suite"
+"wordWrap" "bool TRUE"
+"margin" "int 25"
+"styleSheet" "string "
+"frameShape" "enum 0"
+"contextMenuPolicy" "enum 0"
+"frameShadow" "enum 16"
+"minimumSize" "300 80"
+"sizePolicy" "Expanding Minimum"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 34 Arial,-1,13,5,50,0,0,0,0,0,Regular
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 34 Arial,-1,13,5,50,0,0,0,0,0,Regular
+0  42.99712297125995 50.74999999999852 412.7471229712291 129.7500000000019
+5 Label
+0
+"main()
+{
+  this.styleSheet(\"margin-left: 15px;\");
+}
+" 0
+0
+LAYER, 1 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 2 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 3 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 4 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 5 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 6 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 7 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+3 18 "PANEL_REF2" 26
+"sizePolicy" "Ignored Preferred"
+"layoutAlignment" "AlignNone"
+"UDP HeaderText" "string Test projects"
+"" ""
+"vision/tf/objects/smallHeader.pnl" -30.43750000001148 348 T 95 1.026496259351621 0 0.6138613861386139 61.24397989402674 316.3762376237624
+0
+3 20 "testProjRef" 21
+"sizePolicy" "Minimum Expanding"
+"layoutAlignment" "AlignNone"
+"" ""
+"vision/tf/objects/testProject.pnl" 462.7500000000002 269.0311889648437 T 98 0.7732670089858799 0 0.4292343387470998 83.79569159178402 468.0225755023292
+0
+4 21 "LAYOUT_GROUP52" 26
+1 1 
+85 
+20 
+"S 85" "0 0 1 1"
+"G 20" "1 0 1 1"
+"" ""
+0 1 0 1 0
+3 22 "suiteCommonConfigRef" 26
+"sizePolicy" "Ignored Preferred"
+"layoutAlignment" "AlignNone"
+"" ""
+"vision/tf/objects/commonConfig.pnl" 58.74999999999517 67.49999999999957 T 100 0.8498071359691464 0 0.6612903225806479 10.07383076181675 105.3629032258065
+0
+3 23 "PANEL_REF4" 26
+"layoutAlignment" "AlignNone"
+"UDP HeaderText" "string User data"
+"" ""
+"vision/tf/objects/smallHeader.pnl" -30.43750000001148 348 T 104 1.026496259351621 0 0.6138613861386139 65.00263653112151 58.37623762376239
+0
+4 24 "LAYOUT_GROUP57" 26
+1 0 
+145 
+
+"S 145" "0 0 1 1"
+"" ""
+0 1 0 0
+4 25 "LAYOUT_GROUP58" 26
+1 0 
+202 
+
+"S 202" "0 0 1 1"
+"" ""
+0 2 0 0
+4 26 "LAYOUT_GROUP61" -1
+0 6 
+
+18 21 22 23 24 25 
+"G 18" "4 0 1 1"
+"G 21" "5 0 1 1"
+"G 22" "1 0 1 1"
+"G 23" "2 0 1 1"
+"G 24" "3 0 1 1"
+"G 25" "0 0 1 1"
+"" ""
+0 2 0 0
+0

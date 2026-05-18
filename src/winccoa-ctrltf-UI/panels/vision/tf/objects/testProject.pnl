@@ -1,0 +1,273 @@
+V 14
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+PANEL,-1 -1 618 507 N "WF_PanelBackground" 0
+E E E E E 1 -1 -1 0  10 0
+""0  1
+E "#uses \"var\"
+#uses \"classes/testFramework/testManager/TfTestManager\"
+#uses \"classes/testFramework/testProject/TfTestProject\"
+
+TfTestProject project;
+public setProject(const TfTestProject &proj)
+{
+  project = proj;
+  commonConfigRef.setId(project.getId());
+  commonConfigRef.setName(project.getName());
+  commonConfigRef.setDescription(project.getDescription());
+  mapping projOpts;
+  project.insertToMapping(projOpts);
+
+  treeTestManagers.updatesEnabled(FALSE);
+  treeTestManagers.clear();
+
+  shape sh = getShape(\"treeTestManagers\");
+  dyn_anytype testManagers = project.getTestManagers();
+
+  for (int i = 1; i <= testManagers.count(); i++)
+  {
+    TfTestManager testMan = testManagers[i];
+    mapping opts = testMan.toMapping();
+
+    treeTestManagers.appendItem(\"\", i, mappingCutValueDflt(opts, \"MANAGER_OPTIONS\", i));
+
+    appendItem(i, \"\", opts, sh);
+  }
+
+  treeTestManagers.updatesEnabled(TRUE);
+  treeOptions.updatesEnabled(FALSE);
+  treeOptions.clear();
+
+  sh = getShape(\"treeOptions\");
+  projOpts = mappingCutValueDflt(projOpts, \"INPUT_OPTIONS\", makeMapping());
+  mappingCutValueDflt(projOpts, \"NAME\", \"\");
+  mappingCutValueDflt(projOpts, \"ID\", \"\");
+  mappingCutValueDflt(projOpts, \"DESCRIPTION\", \"\");
+  mappingCutValueDflt(projOpts, \"TEST_MANAGERS\", \"\");
+  mappingCutValueDflt(projOpts, \"SUB_PROJS_PATH\", \"\");
+  appendItem(\"\", \"\", projOpts, sh);
+  treeOptions.updatesEnabled(TRUE);
+}
+
+string appendItem(const string &rootId, const string &name, const anytype &value, const shape &sh)
+{
+  string newId;
+
+  if (!name.isEmpty())
+    newId = rootId + \".\" + name;
+  else
+    newId = rootId;
+
+  if (!newId.isEmpty() && !treeTestManagers.itemExists(newId))
+    sh.appendItem(rootId, newId, name);
+
+  if (isDynVar(value))
+  {
+    for (int i = 1; i <= dynlen(value); i++)
+    {
+      appendItem(newId, name + \" [\" + i + \"]\", value[i], sh);
+    }
+  }
+  else if (isA(value, MAPPING_VAR))
+  {
+    for (int i = 1; i <= mappinglen(value); i++)
+    {
+      appendItem(newId,  mappingGetKey(value, i), mappingGetValue(value, i), sh);
+    }
+  }
+  else
+  {
+    sh.setText(newId, 1, (string)value);
+  }
+
+  return newId;
+}
+
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "WF"
+"dpi" "120"
+"pdpi" "141.951"
+1 1 0 0 0 0 1 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+1 122 0 "" 56
+0
+29 103
+"treeTestManagers"
+"WF"
+1 442.9999999999999 220 E E E 1 E 1 E N "WF_Text" E N "WF_PanelBackground" E E
+ E E
+85 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+2
+"sizePolicy" "Expanding Expanding"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  442.9999999999999 220 723 410
+10 TreeWidget
+0
+"main()
+{
+  treeTestManagers.addColumn(\"Name\");
+  treeTestManagers.addColumn(\"Value\");
+
+  treeTestManagers.setColumnWidthMode(1, TREE_WIDTH_STRETCH);
+  treeTestManagers.alternatingRowColors(TRUE);
+  treeTestManagers.animated(TRUE);
+}
+" 0
+29 121
+"treeOptions"
+"WF"
+1 66.00000000000003 220 E E E 1 E 1 E N "WF_Text" E N "WF_PanelBackground" E E
+ E E
+86 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+2
+"sizePolicy" "Minimum Expanding"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  66.00000000000003 220 346 410
+10 TreeWidget
+0
+"main()
+{
+  treeOptions.addColumn(\"Name\");
+  treeOptions.addColumn(\"Value\");
+
+  treeOptions.setColumnWidthMode(1, TREE_WIDTH_STRETCH);
+  treeOptions.alternatingRowColors(TRUE);
+  treeOptions.animated(TRUE);
+}
+" 0
+1 139 1 "" 1
+0
+1 143 2 "" 1
+0
+0
+LAYER, 1 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 2 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 3 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 4 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 5 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 6 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 7 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+3 0 "commonConfigRef" 6
+"sizePolicy" "Ignored Preferred"
+"layoutAlignment" "AlignNone"
+"UDP Description" "string This is my project description"
+"UDP Id" "string MY_PROJECT_ID"
+"UDP Name" "string My project name"
+"" ""
+"vision/tf/objects/commonConfig.pnl" 35.98437500000011 30 T 84 0.6716489874638378 0 0.8387096774193549 -3.952379158630624 -16.16129032258065
+0
+3 1 "PANEL_REF3" 3
+"sizePolicy" "Ignored Preferred"
+"layoutAlignment" "AlignNone"
+"UDP HeaderText" "string Test managers"
+"" ""
+"vision/tf/objects/smallHeader.pnl" 47.00000000000001 150 T 89 1 0 0.4340909090909091 396 107.3863636363636
+0
+3 2 "PANEL_REF4" 4
+"sizePolicy" "Ignored Preferred"
+"layoutAlignment" "AlignNone"
+"UDP HeaderText" "string Options"
+"" ""
+"vision/tf/objects/smallHeader.pnl" 47.00000000000001 150 T 90 1 0 0.4340909090909091 32 96.38636363636364
+0
+4 3 "LAYOUT_GROUP1" 5
+1 1 
+103 
+1 
+"S 103" "1 0 1 1"
+"G 1" "0 0 1 1"
+"" ""
+0 2 0 1 0
+4 4 "LAYOUT_GROUP2" 5
+1 1 
+121 
+2 
+"S 121" "1 0 1 1"
+"G 2" "0 0 1 1"
+"" ""
+0 2 0 1 0
+4 5 "LAYOUT_GROUP3" 6
+0 2 
+
+3 4 
+"G 3" "1 0 1 1"
+"G 4" "0 0 1 1"
+"" ""
+0 1 0 1 0
+4 6 "LAYOUT_GROUP4" -1
+0 2 
+
+0 5 
+"G 0" "0 0 1 1"
+"G 5" "1 0 1 1"
+"" ""
+0 2 0 1 0
+0

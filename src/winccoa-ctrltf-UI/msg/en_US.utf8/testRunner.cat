@@ -1,0 +1,16 @@
+testRunner_ID,ID
+testRunner_name,Name
+testRunner_description,Description
+testRunner_usersToNotify,Users to notify
+testRunner_http_port,HTTP port
+testRunner_https_port,HTTPS port
+testRunner_ext_manager_options,Extend manager options
+testRunner_createDefaultWs,Create default test workspace
+testRunner_cleanOldResults,Clean old results
+testRunner_cleanStoredProjects,Clean old 'stored' projects
+testRunner_registerGlobalProject,Register global project
+testRunner_registerAllTools,Register all tools
+testRunner_registerAllTemplates,Register all templates
+testRunner_enableNotifications,Enable user notifications
+testRunner_showLogViewer,Show log viewer
+testRunner_enableHttpClient,Enabe HTTP client

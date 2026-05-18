@@ -1,0 +1,842 @@
+V 14
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+PANEL,-1 -1 874 336 N "WF_PanelBackground" 0
+"main()
+{
+  result.tree = getShape(\"TREE1\");
+  uiConnect(\"showTestResult\", \"testResultTreeModule.testResultTree:\", \"showTestResult\");
+}
+
+
+void showTestResult(const OaTestResult &result_)
+{
+
+  result.opCopy(result_);
+  setFilter();
+//   result.convert();
+}
+" 0
+ E E E E 1 -1 -1 0  10 0
+""0  1
+E "#uses \"classes/oaTest/OaTestResultStatistic\"
+#uses \"classes/oaTest/OaTestResult\"
+#uses \"classes/oaTest/OaTestUserData\"
+// #uses \"classes/oaTest/OaTestResultJUnit\"
+#uses \"classes/oaTest/OaTestResultJson\"
+
+enum OaTestResultPanelColumns
+{
+  Name = 0,
+  Timestamp,
+  Duration,
+  Status,
+  StatusAsInt
+};
+
+struct OaTestResulPanelStatistic : OaTestResultStatistic
+{
+  time startTime = 0.0;
+  time endTime = 0.0;
+  float duration;
+  dyn_string knownBugIds;
+
+  void update(const OaTestUserData &assertion)
+  {
+
+    if (this.startTime == (uint)0 || this.startTime > assertion.getStartTimeStamp())
+      this.startTime = assertion.getStartTimeStamp();
+
+    if (this.endTime < assertion.getEndTimeStamp())
+      this.endTime = assertion.getEndTimeStamp();
+
+    this.duration = this.endTime - this.startTime;
+
+    const OaTestResultState state = assertion.getResultState();
+
+    switch (state)
+    {
+      case OaTestResultState::Pass:
+        this._passed++;
+        break;
+
+      case OaTestResultState::Failure:
+        this._failed++;
+        break;
+
+      case OaTestResultState::Abort:
+        this._aborted++;
+        break;
+
+      case OaTestResultState::KnownBug:
+        this._knownBugs++;
+        break;
+
+      case OaTestResultState::Skipped:
+        this._skipped++;
+        break;
+
+      case OaTestResultState::Instable:
+        this._instable++;
+        break;
+    }
+  }
+};
+
+class OaTestResulPanel : OaTestResult
+{
+  public string globalFilter;
+  public string testCaseIdFilter;
+  public string errMsgFilter;
+  public string knownBugFilter;
+  public string noteFilter;
+
+  public shape<\"TREE\"> tree;
+
+  //------------------------------------------------------------------------------
+  public int convert()
+  {
+    tree.updatesEnabled(FALSE);
+    tree.clear();
+    tree.sortingEnabled(TRUE);
+
+    convertTestCases();
+    tree.updatesEnabled(TRUE);
+  }
+
+  //------------------------------------------------------------------------------
+  protected convertTestCases()
+  {
+    dyn_anytype tcs = getTestCases(TRUE); // group by id
+
+    for (int i = 1; i <= dynlen(tcs); i++)
+    {
+      convertAssertions(tcs[i]);
+      dynClear(tcs[i]);
+    }
+
+    tree.setSorting((int)OaTestResultPanelColumns::StatusAsInt, FALSE); // worst case on top
+  }
+
+  //------------------------------------------------------------------------------
+  bool isFiltered(const dyn_anytype &assertions)
+  {
+    for (int i = 1; i <= dynlen(assertions); i++)
+    {
+      const OaTestUserData assertion = assertions[i];
+      bool show = TRUE;
+
+//       if (assertion.getKnownBug() != \"\")
+//       {
+//         DebugN(assertion.getTcId(), assertion.getKnownBug(), \"globalFilter\", globalFilter, \"testCaseIdFilter\", testCaseIdFilter, \"errMsgFilter\", errMsgFilter, \"knownBugFilter\", knownBugFilter, \"noteFilter\", noteFilter);
+//       }
+
+      show = compareFields(globalFilter, assertion.getTcId()) &&
+             compareFields(globalFilter, assertion.getErrMsg()) &&
+             compareFields(globalFilter, assertion.getKnownBug()) &&
+             compareFields(globalFilter, assertion.getNote()) &&
+             compareFields(testCaseIdFilter, assertion.getTcId()) &&
+             compareFields(errMsgFilter, assertion.getErrMsg()) &&
+             compareFields(knownBugFilter, assertion.getKnownBug()) &&
+             compareFields(noteFilter, assertion.getNote());
+
+      if (!show)
+        return FALSE;
+    }
+
+    return TRUE;
+  }
+
+  //------------------------------------------------------------------------------
+  bool compareFields(string filter, string value)
+  {
+    if (value == \"21208\")
+      DebugTN(__FUNCTION__, filter, value);
+
+    if (filter == \"\")
+      return true;
+
+    filter = filter.toUpper();
+    value = value.toUpper();
+
+    if (filter == value)
+      return true;
+    else if (value.contains(filter))
+      return true;
+    else if (patternMatch(filter, value))
+      return true;
+    else if (regexpIndex(filter, value) > 0)
+      return true;
+    else
+    {
+//       DebugTN(__FUNCTION__, \"no match\", filter, value);
+      return false;
+    }
+
+  }
+
+  //------------------------------------------------------------------------------
+  protected convertAssertions(dyn_anytype &assertions)
+  {
+    if (dynlen(assertions) < 1)
+      return; // there are no relevant assertions
+
+    if (!isFiltered(assertions))
+      return;
+
+    const string tcId = assertions[1].getTcId();
+    tree.insertItem(\"\", tcId, tcId);
+    OaTestResulPanelStatistic tcStat = addTcDetail(tcId, assertions);
+
+    //Time taken (in seconds) to execute the test.
+    tree.setText(tcId, (int)OaTestResultPanelColumns::Duration, toDurationString(tcStat.duration));
+    tree.setText(tcId, (int)OaTestResultPanelColumns::Timestamp, (string)tcStat.startTime);
+  }
+
+  //------------------------------------------------------------------------------
+  protected string tcStateToColor(const OaTestResultState &state)
+  {
+    switch (state)
+    {
+      case OaTestResultState::Pass:
+        return \"WF_Info\";
+
+      case OaTestResultState::Failure:
+        return \"WF_Error\";
+
+      case OaTestResultState::Abort:
+        return \"WF_Error\";
+
+      case OaTestResultState::KnownBug:
+        return \"WF_Warning\";
+
+      case OaTestResultState::Skipped:
+        return \"WF_Error\";
+
+      case OaTestResultState::Instable:
+        return \"WF_Warning\";
+    }
+
+    return \"WF_ParamIncorrect\";
+  }
+
+  //------------------------------------------------------------------------------
+  protected OaTestResulPanelStatistic addTcDetail(const string &tcId, dyn_anytype &assertions)
+  {
+    OaTestResulPanelStatistic tcStat;
+
+    if (dynlen(assertions) <= 0)
+      return tcStat;
+
+    int worstCaseIdx;
+    OaTestResultState state;
+    bool hasResult = false;
+    dyn_string knownBugIds;
+
+    tree.insertItem(tcId, tcId + \".logEntries\", \"Logs\");
+
+    for (int i = 1; i <= dynlen(assertions); i++)
+    {
+      const OaTestUserData assertion = assertions[i];
+
+      tcStat.update(assertion);
+
+      assertionToLog(assertion, i, tcId);
+
+      if (\"oaUnitInfo\" == assertion.getMethod())
+      {
+        continue; // oaUnitInfo message
+      }
+
+      hasResult = true;
+
+      if (assertion.hasKnownBug())
+      {
+        dynAppend(knownBugIds, assertion.getKnownBug());
+      }
+
+      const string stateStr = assertion.getResult();
+      const OaTestResultState currState = assertion.getResultState();
+      const bool hasKnownBug = assertion.hasKnownBug();
+
+      if ((int)state < (int)currState)
+      {
+        state = currState;
+        tree.setText(tcId, (int)OaTestResultPanelColumns::Status, stateStr);
+        tree.setBackColor(tcId, (int)OaTestResultPanelColumns::Status, tcStateToColor(state));
+        tree.setText(tcId, (int)OaTestResultPanelColumns::StatusAsInt, (int)state);
+      }
+    }
+
+    string details = tcStat.formatToStdErr(\"%s : %d, \");
+    details = details.left(details.length() - 2);
+    tree.insertItem(tcId, tcId + \".details\", details);
+//     tree.insertItem(tcId + \".details\", tcId + \".details.Stat\", tcStat.formatToStdErr(\"%s : %d \"));
+    tree.setOpen(tcId + \".details\", TRUE);
+
+    if (dynlen(knownBugIds) > 0)
+    {
+      dynUnique(knownBugIds);
+      dynSort(knownBugIds);
+
+      string str;
+      sprintf(str, \"%s (%d)\", \"Known bugs\", dynlen(knownBugIds));
+
+      tree.insertItem(tcId + \".details\", tcId + \".details.KnownBugs\", str);
+
+      for (int i = dynlen(knownBugIds); i > 0 ; i--)
+      {
+        tree.appendItem(tcId + \".details.KnownBugs\", tcId + \".details.KnownBugs.\" + i, knownBugIds[i]);
+      }
+    }
+
+    return tcStat;
+  }
+
+  //------------------------------------------------------------------------------
+  protected void assertionToLog(const OaTestUserData &assertion, const int &index, const string &tcId)
+  {
+    string logEntry;
+
+
+    // stack trace
+    logEntry = (string)assertion.getEndTimeStamp() + \": \";
+    logEntry += assertion.getErrMsg();
+    logEntry += \"\\n  Duration: \" + toDurationString(assertion.getDuration());
+    logEntry += \"\\n  Location: \" + assertion.getLocation();
+
+    tree.appendItem(tcId + \".logEntries\", tcId + \".logEntries.\" + index, makeUnixPath(logEntry));
+
+    if (assertion.getMethod() != \"oaUnitInfo\")
+      tree.setBackColor(tcId + \".logEntries.\" + index, (int)OaTestResultPanelColumns::Name, tcStateToColor(assertion.getResultState()));
+  }
+
+
+  //------------------------------------------------------------------------------
+  const int secInDay = 3600 * 24;
+  string toDurationString(const float &duration)
+  {
+    int d = (int)duration / secInDay;
+    int h = ((int)duration - (d * secInDay)) / 3600;
+
+    if (d > 0)
+      return d + \" Days \" + h + \" Hours\";
+
+    int m = ((int)duration - (d * secInDay) - (h * 3600)) / 60;
+
+    if (h > 0)
+      return h + \" Hours \" + m + \" Min.\";
+
+    int s = ((int)duration - (d * secInDay) - (h * 3600) - (m * 60)) / 60;
+
+    if (m > 0)
+      return m + \" Min. \" + (int)s + \" s\";
+
+    return (string)duration + \" s.ms\";
+
+    return \"\";
+  }
+
+
+};
+
+
+
+
+OaTestResulPanel result;
+
+
+synchronized void setFilter()
+{
+
+  result.globalFilter = input_results_filter_global.text();
+  result.testCaseIdFilter = input_results_filter_TC_ID.text();
+  result.errMsgFilter = input_results_filter_errMsg.text();
+  result.knownBugFilter = input_results_filter_knownBug.text();
+  result.noteFilter = input_results_filter_note.text();
+  result.convert();
+
+
+}
+
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "WF"
+"dpi" "120"
+"pdpi" "141.951"
+1 1 0 0 0 0 1 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+29 7
+"results_filter_global"
+""
+1 260 -90 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+6 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Filter"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  249.0000000000002 14.5 477.9999999999975 39.5
+5 Label
+0
+E14 8
+"input_results_filter_global"
+"WF"
+1 485.0000000000003 20.9102564102563 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+7 0 0 0 0 0
+E "main()
+{
+  setFilter();
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  483.0000000000002 12.5 841.0000000000002 41.50000000000011
+3 "0s" 0 0 0 0 0 -1  E E "
+
+main()
+{
+  setFilter();
+}
+
+
+" 0
+
+29 11
+"Label1"
+""
+1 70 -39 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+10 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Test-Case ID"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  59.0000000000002 65.5 287.9999999999975 90.5
+5 Label
+0
+E14 12
+"input_results_filter_TC_ID"
+"WF"
+1 295.0000000000003 71.9102564102563 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+11 0 0 0 0 0
+E "main()
+{
+  setFilter();
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  293.0000000000002 63.5 651.0000000000002 92.50000000000011
+3 "0s" 0 0 0 0 0 -1  E E "
+
+main()
+{
+  setFilter();
+}
+
+
+" 0
+
+29 13
+"Label2"
+""
+1 673 -39 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+12 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Known bug"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  662.0000000000002 65.5 890.9999999999975 90.5
+5 Label
+0
+E14 14
+"input_results_filter_knownBug"
+"WF"
+1 898.0000000000002 71.9102564102563 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+13 0 0 0 0 0
+E "main()
+{
+  setFilter();
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  896.0000000000002 63.5 1254 92.50000000000011
+3 "0s" 0 0 0 0 0 -1  E E "
+
+main()
+{
+  setFilter();
+}
+
+
+" 0
+
+29 15
+"Label3"
+""
+1 69.9999999999998 2 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+14 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Error message"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  59 106.5 287.9999999999973 131.5
+5 Label
+0
+E14 16
+"input_results_filter_errMsg"
+"WF"
+1 295.0000000000001 112.9102564102563 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+15 0 0 0 0 0
+E "main()
+{
+  setFilter();
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  293 104.5 651 133.5000000000001
+3 "0s" 0 0 0 0 0 -1  E E "
+
+main()
+{
+  setFilter();
+}
+
+
+" 0
+
+29 17
+"Label4"
+""
+1 672.9999999999999 2.249999999999943 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+16 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Note"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  662.0000000000001 106.7499999999999 890.9999999999974 131.7499999999999
+5 Label
+0
+E14 18
+"input_results_filter_note"
+"WF"
+1 890.9999999999989 113.1602564102562 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+17 0 0 0 0 0
+E "main()
+{
+  setFilter();
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  888.9999999999987 104.7499999999999 1246.999999999999 133.7500000000001
+3 "0s" 0 0 0 0 0 -1  E E "
+
+main()
+{
+  setFilter();
+}
+
+
+" 0
+
+29 21
+"TREE1"
+"WF"
+1 70 250 E E E 1 E 1 E N "WF_Text" E N "WF_PanelBackground" E E
+ E E
+20 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+1
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  70 250 640 510
+10 TreeWidget
+0
+"main()
+{
+  TREE1.addColumn(\"Test name\");
+  TREE1.addColumn(\"Timestamp\");
+  TREE1.addColumn(\"Duration\");
+  TREE1.addColumn(\"Status\");
+  TREE1.addColumn(\"Status_int\");
+  TREE1.setColumnWidthMode((int)OaTestResultPanelColumns::Name, TREE_WIDTH_STRETCH);
+  TREE1.alternatingRowColors(TRUE);
+  TREE1.hideColumn((int)OaTestResultPanelColumns::StatusAsInt, TRUE);
+}
+" 0
+0
+LAYER, 1 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 2 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 3 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 4 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 5 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 6 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 7 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+4 0 "L_debugOptions" 7
+2 0 
+7 8 
+
+"S 7" "0 0 1 1"
+"S 8" "1 0 1 1"
+"" ""
+0 1 1 10 10 0 0 0
+4 1 "LAYOUT_GROUP2" 6
+2 0 
+11 12 
+
+"S 11" "0 0 1 1"
+"S 12" "1 0 1 1"
+"" ""
+0 1 0 0
+4 2 "LAYOUT_GROUP3" 6
+2 0 
+13 14 
+
+"S 13" "0 0 1 1"
+"S 14" "1 0 1 1"
+"" ""
+0 1 0 0
+4 3 "LAYOUT_GROUP4" 5
+2 0 
+15 16 
+
+"S 15" "0 0 1 1"
+"S 16" "1 0 1 1"
+"" ""
+0 1 0 0
+4 4 "LAYOUT_GROUP5" 5
+2 0 
+17 18 
+
+"S 17" "0 0 1 1"
+"S 18" "1 0 1 1"
+"" ""
+0 1 0 0
+4 5 "LAYOUT_GROUP8" 7
+0 2 
+
+3 4 
+"G 3" "0 0 1 1"
+"G 4" "1 0 1 1"
+"" ""
+0 1 1 10 10 0 0 0
+4 6 "LAYOUT_GROUP9" 7
+0 2 
+
+1 2 
+"G 1" "0 0 1 1"
+"G 2" "1 0 1 1"
+"" ""
+0 1 1 10 10 0 0 0
+4 7 "LAYOUT_GROUP10" -1
+1 3 
+21 
+0 5 6 
+"S 21" "3 0 1 1"
+"G 0" "0 0 1 1"
+"G 5" "2 0 1 1"
+"G 6" "1 0 1 1"
+"" ""
+0 2 1 0 0 10 0 0
+0

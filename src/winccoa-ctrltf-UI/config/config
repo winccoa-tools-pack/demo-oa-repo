@@ -1,0 +1,8 @@
+[general]
+# These placeholders are replaced by the GitHub Action at runtime.
+pvss_path = "<WinCC_OA_PATH>"
+proj_path = "<PROJECT_PATH>"
+proj_version = "<WinCC_OA_VERSION>"
+
+lang = "auto"
+langs = "en_US.utf8"

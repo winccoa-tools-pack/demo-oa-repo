@@ -1,0 +1,37 @@
+name: WinCC OA Syntax Check
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+      # Required if your WinCC OA image is private
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run syntax check
+        uses: winccoa-tools-pack/winccoa-tools-pack/oalint-ci-gh@main
+        with:
+          path: "src/winccoa-ctrltf-UI"
+          winccoa-version: "3.20"
+          docker-image: "ghcr.io/winccoa-tools-pack/winccoa:latest"
+          fail-on-error: "true"
+          mode: "all"
+          integrity: "false"
+          timeout-ms: "60000"

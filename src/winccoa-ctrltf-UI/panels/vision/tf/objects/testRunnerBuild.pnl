@@ -1,0 +1,1194 @@
+V 14
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+PANEL,-1 -1 1023 863 N "WF_PanelBackground" 0
+"main()
+{
+  addGlobal(\"checkBoxKeys\", DYN_STRING_VAR);
+  uiConnect(\"testRunSelected\", \"testRunnerTreeModule.testRunnerTree:\", \"testRunSelected\");
+}
+
+void testRunSelected(const TfTestRun &tr)
+{
+  commonConfigRef.setId(tr.getId());
+  commonConfigRef.setName(tr.getName());
+  commonConfigRef.setDescription(tr.getDescription());
+
+  if (tr.hasTestSuite())
+  {
+    testSuiteRef.visible(TRUE);
+    TfTestSuite testSuite = tr.getTestSuite();
+    testSuiteRef.setTestSuite(testSuite);
+    showStartOptions(!btn_showStartOptions.toggleState());
+  }
+  else
+  {
+    testSuiteRef.visible(FALSE);
+    showStartOptions(TRUE);
+  }
+}
+" 0
+ E E E E 1 -1 -1 0  10 0
+""0  1
+E "
+#uses \"classes/globalStorage/GlobalStorage\"
+#uses \"classes/projectEnvironment/ProjEnvComponent\"
+
+
+
+// global dyn_string checkBoxKeys;
+
+GlobalStorage globalStorage = GlobalStorage(\"testRunner\");
+
+void setPanelValue(const string &key)
+{
+  globalStorage.setValue(key, (string)this.text());
+}
+
+
+void setDefValue(const string &key, const anytype &defValue)
+{
+  globalStorage.setValue(key, defValue);
+}
+
+void updatePanelValue(const string &key)
+{
+  this.text() = globalStorage.getValue(key);
+}
+
+
+void showStartOptions(const bool &show)
+{
+  if (show)
+  {
+    LAYOUT_GROUP_START_OPTIONS.visible(TRUE);
+    btn_showStartOptions.buttonUpPixmap = \"wf/buttons/down.png\";
+    btn_showStartOptions.buttonDownPixmap = \"wf/buttons/down_pressed.png\";
+  }
+  else
+  {
+    LAYOUT_GROUP_START_OPTIONS.visible(FALSE);
+    btn_showStartOptions.buttonDownPixmap = \"wf/buttons/up.png\";
+    btn_showStartOptions.buttonUpPixmap = \"wf/buttons/up_pressed.png\";
+
+  }
+}
+
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "WF"
+"dpi" "120"
+"pdpi" "141.951"
+1 1 0 0 0 0 1 7
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+1 195 20 "" 1
+0
+20 9
+"cbx_options"
+"WF"
+1 86.5 781.1874999999998 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+8 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "230 -1"
+"layoutAlignment" "AlignNone"
+"showBackground" "0"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  84.5 779.1874999999998 258.5 973.1874999999998
+9
+T 
+3
+LANG:10000 26 testRunner_createDefaultWs
+LANG:10001 26 testRunner_createDefaultWs
+LANG:10027 26 testRunner_createDefaultWs
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 26 testRunner_cleanOldResults
+LANG:10001 26 testRunner_cleanOldResults
+LANG:10027 26 testRunner_cleanOldResults
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 30 testRunner_cleanStoredProjects
+LANG:10001 30 testRunner_cleanStoredProjects
+LANG:10027 30 testRunner_cleanStoredProjects
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 32 testRunner_registerGlobalProject
+LANG:10001 32 testRunner_registerGlobalProject
+LANG:10027 32 testRunner_registerGlobalProject
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 27 testRunner_registerAllTools
+LANG:10001 27 testRunner_registerAllTools
+LANG:10027 27 testRunner_registerAllTools
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 31 testRunner_registerAllTemplates
+LANG:10001 31 testRunner_registerAllTemplates
+LANG:10027 31 testRunner_registerAllTemplates
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 30 testRunner_enableNotifications
+LANG:10001 30 testRunner_enableNotifications
+LANG:10027 30 testRunner_enableNotifications
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 24 testRunner_showLogViewer
+LANG:10001 24 testRunner_showLogViewer
+LANG:10027 24 testRunner_showLogViewer
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+T 
+3
+LANG:10000 27 testRunner_enableHttpClient
+LANG:10001 27 testRunner_enableHttpClient
+LANG:10027 27 testRunner_enableHttpClient
+
+0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E
+0 0 0 0 0
+0
+"main()
+{
+  for (int i = 0; i < this.itemCount(); i++)
+  {
+    string key = this.text(i);
+    this.text(i, getCatStr(\"testRunner\", key));
+    int state = globalStorage.getValue(key);
+    this.state(i, state);
+    dynAppend(checkBoxKeys, key);
+
+    switch (key)
+    {
+      case \"testRunner_enableNotifications\":
+        input_testRunner_usersToNotify.enabled(state);
+        testRunner_usersToNotify.enabled(state);
+        break;
+
+      case \"testRunner_enableHttpClient\":
+        input_testRunner_http_port.enabled(state);
+        testRunner_http_port.enabled(state);
+        input_testRunner_https_port.enabled(state);
+        testRunner_https_port.enabled(state);
+        break;
+    }
+  }
+}
+" 0
+"main(int button, int state)
+{
+  const string key = checkBoxKeys[button + 1];
+  globalStorage.setValue(key, (string)state);
+
+  switch (key)
+  {
+    case \"testRunner_enableNotifications\":
+      input_testRunner_usersToNotify.enabled(state);
+      testRunner_usersToNotify.enabled(state);
+      break;
+
+    case \"testRunner_enableHttpClient\":
+      input_testRunner_http_port.enabled(state);
+      testRunner_http_port.enabled(state);
+      input_testRunner_https_port.enabled(state);
+      testRunner_https_port.enabled(state);
+      break;
+  }
+}
+" 0
+29 12
+"testRunner_https_port"
+""
+1 221.5000000000002 833.3125000000002 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+11 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string HTTPS port"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  210.5000000000004 937.8125000000002 439.4999999999977 962.8125000000002
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"testRunner\", this.name()));
+}
+" 0
+14 13
+"input_testRunner_https_port"
+"WF"
+1 446.5000000000005 944.2227564102567 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+12 0 0 0 0 0
+E "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  444.5000000000004 935.8125000000002 830.5 964.8125000000005
+3 "0s" 0 0 0 0 0 -1  E "main()
+{
+  updatePanelValue(this.name);
+}
+" 0
+ "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+
+13 14
+"restore_testRunner_https_port"
+"WF"
+1 858.5 939.4864130434787 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+13 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  856.5 935.3125000000002 885.4999999999991 964.3124999999995
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+"main(mapping event)
+{
+  doxyPanel.resetValue(this.name);
+}
+" 0
+ E E "main()
+{
+  this.toolTipText(getCatStr(\"testRunner\", \"resetThis\"));
+}
+" 0
+
+13 15
+"PUSH_BUTTON25"
+""
+1 890.5 939.4864130434786 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+14 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  888.5 935.3125000000002 917.5 964.3124999999995
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+29 20
+"testRunner_ext_manager_options"
+""
+1 110 920.1562499999998 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+19 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Extend manager options"
+"minimumSize" "230 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  99.0000000000002 1024.65625 327.9999999999975 1049.65625
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"testRunner\", this.name()));
+}
+" 0
+14 21
+"input_testRunner_ext_manager_options"
+"WF"
+1 335.0000000000003 1031.066506410256 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+20 0 0 0 0 0
+E "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  333.0000000000002 1022.65625 691.0000000000002 1051.65625
+3 "0s" 0 0 0 0 0 -1  E "main()
+{
+  updatePanelValue(this.name);
+}
+" 0
+ "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+
+13 22
+"restore_testRunner_ext_manager_options"
+"WF"
+1 689.0000000000002 1027.330163043478 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+21 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  687.0000000000002 1023.15625 715.9999999999993 1052.156249999999
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+"main(mapping event)
+{
+  doxyPanel.resetValue(this.name);
+}
+" 0
+ E E "main()
+{
+  this.toolTipText(getCatStr(\"testRunner\", \"resetThis\"));
+}
+" 0
+
+13 23
+"PUSH_BUTTON29"
+""
+1 721.0000000000002 1027.330163043478 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+22 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  719.0000000000002 1023.15625 748.0000000000002 1052.156249999999
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+29 30
+"testRunner_http_port"
+""
+1 221.5000000000002 791.3125000000002 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+29 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string HTTP port"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  210.5000000000004 895.8125000000002 439.4999999999977 920.8125000000002
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"testRunner\", this.name()));
+}
+" 0
+14 31
+"input_testRunner_http_port"
+"WF"
+1 453.500000000001 901.7227564102567 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+30 0 0 0 0 0
+E "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  451.5000000000009 893.3125000000005 860.5 922.3125000000005
+3 "0s" 0 0 0 0 0 -1  E "main()
+{
+  updatePanelValue(this.name);
+}
+" 0
+ "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+
+13 32
+"restore_testRunner_http_port"
+"WF"
+1 858.5 897.4864130434786 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+31 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  856.5 893.3125000000002 885.4999999999991 922.3124999999995
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+"main(mapping event)
+{
+  doxyPanel.resetValue(this.name);
+}
+" 0
+ E E "main()
+{
+  this.toolTipText(getCatStr(\"testRunner\", \"resetThis\"));
+}
+" 0
+
+13 33
+"PUSH_BUTTON31"
+""
+1 890.5 897.4864130434785 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+32 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  888.5 893.3125000000002 917.5 922.3124999999995
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+13 37
+"PUSH_BUTTON33"
+""
+1 890.4999999999999 852.4864130434789 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+36 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  888.4999999999999 848.3125000000007 917.4999999999999 877.3125
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+29 38
+"testRunner_usersToNotify"
+""
+1 221.5000000000001 746.5625000000001 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+37 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Users to notify"
+"minimumSize" "150 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  210.5000000000003 851.0625 439.4999999999976 876.0625
+5 Label
+0
+"main()
+{
+  this.text(getCatStr(\"testRunner\", this.name()));
+}
+" 0
+14 39
+"input_testRunner_usersToNotify"
+"WF"
+1 446.5000000000004 857.4727564102564 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+38 0 0 0 0 0
+E "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  444.5000000000003 849.0625 850.5 878.0625000000002
+3 "0s" 0 0 0 0 0 -1  E "main()
+{
+  updatePanelValue(this.name);
+}
+" 0
+ "main()
+{
+  setPanelValue(this.name);
+}
+" 0
+
+13 40
+"restore_testRunner_usersToNotify"
+"WF"
+1 858.4999999999998 852.7364130434784 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+39 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  856.4999999999998 848.5625 885.4999999999989 877.5624999999993
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+"main(mapping event)
+{
+  doxyPanel.resetValue(this.name);
+}
+" 0
+ E E "main()
+{
+  this.toolTipText(getCatStr(\"testRunner\", \"resetThis\"));
+}
+" 0
+
+13 41
+"PUSH_BUTTON35"
+""
+1 890.4999999999998 852.7364130434783 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+40 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  888.4999999999998 848.5625 917.4999999999998 877.5624999999993
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+29 42
+"testRunner_titleDescription"
+""
+1 88.75000000001216 1.999999999998323 E E E 1 E 1 E N "_3DText" E N "white" E E
+ E E
+41 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+10
+"text" "string Test-Runner"
+"wordWrap" "bool TRUE"
+"margin" "int 25"
+"styleSheet" "string "
+"frameShape" "enum 0"
+"contextMenuPolicy" "enum 0"
+"frameShadow" "enum 16"
+"minimumSize" "300 80"
+"sizePolicy" "Expanding Minimum"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 34 Arial,-1,13,5,50,0,0,0,0,0,Regular
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 34 Arial,-1,13,5,50,0,0,0,0,0,Regular
+0  88.75000000001216 1.999999999998323 1262.749999999969 81.00000000000168
+5 Label
+0
+"main()
+{
+  this.styleSheet(\"margin-left: 15px;\");
+}
+" 0
+4 43
+"LINE2"
+""
+1 88.49999999999045 81 E E E 1 E 1 E N "WF_RefDiffLineDark" E N {255,255,255} E E
+ E E
+42 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 3 2 1 E  88.49999999999045 81 1262.5 81
+32 44
+"SPACER3"
+""
+1 488.5 788.3125000000002 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+43 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"transparentForMouse" ""
+"sizePolicy" "Ignored Expanding"
+"layoutAlignment" "AlignNone"
+ 488.5 788.3125000000002 548.5 838.3125000000002 2
+32 45
+"SPACER4"
+""
+1 502 980.1562499999998 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+44 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"transparentForMouse" ""
+"sizePolicy" "Ignored Expanding"
+"layoutAlignment" "AlignNone"
+ 502 980.1562499999998 592 1017.28125 2
+1 125 18 "18" 1
+0
+1 178 19 "" 56
+0
+13 122
+"btn_showStartOptions"
+"WF"
+1 690 731 E E E 1 E 1 E N "_ButtonText" E N "_Button" E E
+ E E
+73 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+5
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"sizePolicy" "Minimum Fixed"
+"layoutAlignment" "AlignVCenter"
+"isToggle" ""
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  688 725.2500000000001 716.9999999999991 754.2499999999994
+
+P 
+4294967295
+"pictures/wf/buttons/down.png"
+3
+LANG:10000 13 PUSH_BUTTON48
+LANG:10001 13 PUSH_BUTTON48
+LANG:10027 13 PUSH_BUTTON48
+"main(mapping event)
+{
+  showStartOptions(!this.toggleState());
+}
+" 0
+ E E "main()
+{
+  this.buttonType(BT_PIXMAP);
+  this.buttonUpPixmap = \"wf/buttons/down.png\";
+  this.buttonDownPixmap = \"wf/buttons/down_pressed.png\";
+}
+" 0
+
+32 124
+"SPACER6"
+""
+1 600 731 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+75 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"transparentForMouse" ""
+"sizePolicy" "Expanding Ignored"
+"layoutAlignment" "AlignNone"
+ 600 731 640 751 1
+0
+LAYER, 1 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 2 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 3 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 4 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 5 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 6 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 7 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+4 0 "LAYOUT_GROUP10" 8
+4 0 
+12 13 14 15 
+
+"S 12" "0 0 1 1"
+"S 13" "1 0 1 1"
+"S 14" "2 0 1 1"
+"S 15" "3 0 1 1"
+"" ""
+0 1 0 0
+4 1 "L_debugOptions" 22
+4 0 
+20 21 22 23 
+
+"S 20" "0 0 1 1"
+"S 21" "1 0 1 1"
+"S 22" "2 0 1 1"
+"S 23" "3 0 1 1"
+"" ""
+0 1 0 0
+4 4 "LAYOUT_GROUP12" 8
+4 0 
+30 31 32 33 
+
+"S 30" "0 0 1 1"
+"S 31" "1 0 1 1"
+"S 32" "2 0 1 1"
+"S 33" "3 0 1 1"
+"" ""
+0 1 0 0
+4 5 "LAYOUT_GROUP13" 8
+4 0 
+38 39 40 41 
+
+"S 38" "0 0 1 1"
+"S 39" "1 0 1 1"
+"S 40" "2 0 1 1"
+"S 41" "3 0 1 1"
+"" ""
+0 1 0 0
+4 7 "LAYOUT_GROUP14" 6
+1 0 
+42 
+
+"S 42" "0 0 1 1"
+"" ""
+0 3 0 1 0
+4 6 "LAYOUT_GROUP38" 24
+1 1 
+43 
+7 
+"S 43" "1 0 1 1"
+"G 7" "0 0 1 1"
+"" ""
+0 3 0 1 0
+4 8 "LAYOUT_GROUP40" 9
+2 3 
+37 44 
+0 4 5 
+"S 37" "1 0 1 1"
+"S 44" "0 0 1 1"
+"G 0" "4 0 1 1"
+"G 4" "3 0 1 1"
+"G 5" "2 0 1 1"
+"" ""
+0 2 0 0
+4 9 "LAYOUT_GROUP41" 22
+1 1 
+9 
+8 
+"S 9" "0 0 1 1"
+"G 8" "1 0 1 1"
+"" ""
+0 1 0 0
+3 18 "testSuiteRef" 24
+"sizePolicy" "Ignored Expanding"
+"layoutAlignment" "AlignNone"
+"" ""
+"vision/tf/objects/testSuite.pnl" 79.50000000000512 518 T 71 1 0 0.7969348659003831 -65.00000000000512 -201.9685105363986
+0
+3 19 "commonConfigRef" 24
+"layoutAlignment" "AlignNone"
+"" ""
+"vision/tf/objects/commonConfig.pnl" 79.50000000000131 96.4974459134624 T 72 1 0 0.7032258064516127 10.49999999999869 22.14050577698453
+0
+3 20 "PANEL_REF1" 23
+"layoutAlignment" "AlignNone"
+"UDP HeaderText" "string Start options"
+"" ""
+"vision/tf/objects/smallHeader.pnl" 124.2499999999976 221 T 72 1 0 0.3564356435643565 -44.24999999999756 642.977722772277
+0
+4 22 "LAYOUT_GROUP_START_OPTIONS" 24
+1 2 
+45 
+9 1 
+"S 45" "1 0 1 1"
+"G 9" "0 0 1 1"
+"G 1" "2 0 1 1"
+"" ""
+0 2 1 0 0 0 5 0
+4 23 "LAYOUT_GROUP_START_OPTIONS_HEADER" 24
+2 1 
+122 124 
+20 
+"S 122" "0 3 1 1"
+"S 124" "0 1 1 1"
+"G 20" "0 0 1 5"
+"" ""
+0 3 0 0
+4 24 "LAYOUT_GROUP42" -1
+0 5 
+
+6 18 19 22 23 
+"G 6" "0 0 1 1"
+"G 18" "2 0 1 1"
+"G 19" "1 0 1 1"
+"G 22" "4 0 1 1"
+"G 23" "3 0 1 1"
+"" ""
+0 2 0 1 7
+0

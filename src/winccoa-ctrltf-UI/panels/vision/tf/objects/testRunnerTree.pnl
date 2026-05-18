@@ -1,0 +1,393 @@
+V 14
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+PANEL,-1 -1 357 579 N "WF_PanelBackground" 0
+E E E E E 1 -1 -1 0  10 0
+""0  1
+E "#uses \"classes/testFramework/TfCfg\"
+#uses \"classes/globalStorage/GlobalStorage\"
+#uses \"classes/testFramework/testRun/TfTestRun\"
+#uses \"classes/oaTest/OaTestResultJson\"
+#uses \"fileSystem\"
+#uses \"classes/testFramework/TfFileSys\"
+
+#event testRunSelected(TfTestRun tr)
+
+GlobalStorage globalStorage = GlobalStorage(\"vision_tf\");
+
+dyn_string testRunsIds;
+void loadTestRuns()
+{
+  input_results_filter_global.enabled(FALSE);
+  testRunsTree.clear();
+
+
+  //get all test \"root\" test runs
+  if (testRunsIds.count() <= 0)
+  {
+    // first init
+
+    // read file
+//     TfCfg cfgFile = TfCfg(TfTestRun::getConfigsPath());
+//     cfgFile.enableSanitizeInterpolate = false;
+//     cfgFile.read();
+    TfTestRun tr;
+    tr.initFromJsonFile(TfTestRun::getConfigsPath(), \"\");
+    TfTestRun::enableSanitizeInterpolate = false;
+    TfTestSuite::enableSanitizeInterpolate = false;
+  //  tr.initFromMapping(cfgFile.getProperty(\"TEST_RUNS\"), \"\");
+
+    testRunsIds = tr.getAllIds();
+  }
+  else
+  {
+    testRunsTree.updatesEnabled(FALSE);
+  }
+
+  if (testRunsIds.count() > 0)
+  {
+    testRunsIds.sort(false);
+
+    // show root testRuns
+    for (int i = 1; i <= testRunsIds.count(); i++)
+    {
+      string id = testRunsIds[i];
+      _addTestRun(\"\", id);
+    }
+  }
+
+  testRunsTree.setSorting(0, TRUE);
+  testRunsTree.updatesEnabled(TRUE);
+  input_results_filter_global.enabled(TRUE);
+}
+
+string globalFilter = \"*\";
+
+synchronized setFilter()
+{
+  globalFilter = strtoupper(input_results_filter_global.text());
+
+  if (globalFilter == \"\")
+    globalFilter = \"*\";
+  else
+    globalFilter = \"*\" + globalFilter + \"*\";
+
+  loadTestRuns();
+}
+//------------------------------------------------------------------------------
+bool isFiltered(const TfTestRun &tr)
+{
+  if (patternMatch(globalFilter, strtoupper(tr.getId())))
+    return TRUE;
+
+  if (patternMatch(globalFilter, strtoupper(tr.getName())))
+    return TRUE;
+
+  if (patternMatch(globalFilter, strtoupper(tr.getDescription())))
+    return TRUE;
+
+  return FALSE;
+}
+
+mapping testRunsCahe;
+string currentTestRunId;
+_addTestRun(const string &rootId, const string &trId)
+{
+  TfTestRun tr;
+  bool canInit = TRUE;
+
+  if (!testRunsCahe.contains(trId))
+  {
+    int rc = tr.initFromCache(trId);
+    canInit = rc == 0;
+
+    testRunsCahe[trId] = tr;
+  }
+  else
+  {
+    tr = testRunsCahe[trId];
+  }
+
+  if (!isFiltered(tr))
+    return;
+
+  string uniqueId = rootId;
+
+  if (!uniqueId.isEmpty())
+    uniqueId += \";\";
+
+  uniqueId += trId;
+  testRunsTree.appendItem(rootId, uniqueId, trId);
+  testRunsTree.setText(uniqueId, 1, (string)tr.getName());
+  testRunsTree.setToolTip(uniqueId, 0, (string)tr.getName());
+
+  string description = tr.getDescription();
+  description.replace(\". \", \"\\n\");
+  description.replace(\"? \", \"\\n\");
+  description.replace(\"! \", \"\\n\");
+  testRunsTree.setText(uniqueId, 2, description);
+  testRunsTree.setToolTip(uniqueId, 1, description);
+
+
+  if (!canInit)
+  {
+    setColorRecursive(uniqueId, 0, \"WF_Error\");
+  }
+
+  // show childerns
+  dyn_string childIDs = tr.getChildren();
+
+  for (int i = 1; i <= childIDs.count(); i++)
+  {
+    _addTestRun(uniqueId, childIDs[i]);
+  }
+}
+
+setColorRecursive(string treeId, int idx, string color)
+{
+  int i;
+  while (treeId != \"\" && i < 10)
+  {
+    testRunsTree.setBackColor(treeId, idx, color);
+    if (!treeId.contains(\";\"))
+      treeId = \"\";
+    else
+      treeId = substr(treeId, 0, treeId.lastIndexOf(\";\"));
+    i++;
+  }
+}
+
+
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "WF"
+"dpi" "120"
+"pdpi" "141.951"
+1 1 0 0 0 0 1 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+29 2
+"testRunsTree"
+"WF"
+1 30 130 E E E 1 E 1 E N "WF_Text" E N "WF_PanelBackground" E E
+ E E
+1 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "150 -1"
+"sizePolicy" "Preferred Preferred"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  30 130 499.9999999999999 560
+10 TreeWidget
+1
+0 "selectionChanged" "(string id)"
+"  globalStorage.setValue(\"testRunner_lastSelected\", id);
+  string trId = this.getText(id, 0);
+
+  if (!testRunsCahe.contains(trId))
+    return;
+
+  TfTestRun tr = testRunsCahe[trId];
+  triggerEvent(self.testRunSelected, testRunsCahe[trId]);"
+"
+main()
+{
+  this.enabled(FALSE);
+  this.addColumn(\"ID\");
+  this.setColumnWidthMode(0, TREE_WIDTH_MAXIMUM);
+  this.addColumn(\"Name\");
+  this.setColumnWidthMode(1, TREE_WIDTH_STRETCH);
+  this.addColumn(\"Description\");
+  this.hideColumn(2, TRUE);
+  this.sortingEnabled(TRUE);
+  this.alternatingRowColors(TRUE);
+  this.animated(TRUE);
+  loadTestRuns();
+
+
+  string lastSelected = globalStorage.getValue(\"testRunner_lastSelected\", \"\");
+
+  if (!lastSelected.isEmpty() && this.itemExists(lastSelected))
+  {
+    this.setSelectedItem(lastSelected, TRUE);
+    this.ensureItemVisible(lastSelected, \"PositionAtCenter\");
+  }
+  else if (testRunsCahe.count() > 0)
+  {
+    TfTestRun tr = testRunsCahe.valueAt(1);
+    this.setSelectedItem(tr.getId(), TRUE);
+    this.ensureItemVisible(lastSelected);
+//    triggerEvent(self.testRunSelected, tr);
+  }
+
+  this.enabled(TRUE);
+}
+" 0
+29 3
+"testRuns_filter_global"
+""
+1 40.9999999999998 -74 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+2 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Filter"
+"minimumSize" "50 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  30 30.5 258.9999999999973 55.5
+5 Label
+0
+E14 4
+"input_results_filter_global"
+"WF"
+1 266.0000000000001 36.9102564102563 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+3 0 0 0 0 0
+E "main()
+{
+  setFilter();
+}
+" 0
+ E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  264 28.5 622 57.50000000000011
+3 "0s" 0 0 0 0 0 -1  E E "
+
+main()
+{
+  setFilter();
+}
+
+
+" 0
+
+4 5
+"LINE1"
+""
+1 670 40 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+4 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "1"
+E E 0 1 3 2 1 E  670 40 670 340
+0
+LAYER, 1 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 2 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 3 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 4 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 5 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 6 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 7 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+4 3 "L_debugOptions" 4
+2 0 
+3 4 
+
+"S 3" "0 0 1 1"
+"S 4" "1 0 1 1"
+"" ""
+0 1 1 10 10 0 0 0
+4 4 "LAYOUT_GROUP1" -1
+1 1 
+2 
+3 
+"S 2" "1 0 1 1"
+"G 3" "0 0 1 1"
+"" ""
+0 2 1 0 0 10 0 0
+4 5 "LAYOUT_GROUP2" -1
+1 0 
+5 
+
+"S 5" "0 0 1 1"
+"" ""
+0 2 0 0
+0

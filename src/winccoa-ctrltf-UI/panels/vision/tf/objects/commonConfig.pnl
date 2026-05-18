@@ -1,0 +1,628 @@
+V 14
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+PANEL,-1 -1 783 156 N "WF_PanelBackground" 0
+E E E E E 1 -1 -1 0  10 0
+""0  1
+E "
+#property string Id
+string id;
+
+public setId(string value)
+{
+  id = value;
+  input_ID.text = id;
+  DebugTN(__FUNCTION__, value, input_ID.text, self.name);
+}
+
+public string getId()
+{
+  return id;
+}
+
+
+#property string Name
+string name;
+
+public setName(string value)
+{
+  name= value;
+  input_name.text = name;
+}
+
+public string getName()
+{
+  return name;
+}
+
+
+#property string Description
+string description;
+
+public setDescription(string value)
+{
+  description= value;
+  input_description.text = description;
+}
+
+public string getDescription()
+{
+  return description;
+}
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "WF"
+"dpi" "120"
+"pdpi" "141.951"
+1 1 5 5 5 5 1 10
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+29 56
+"testSuite_ID"
+""
+1 53.50000000000003 1.999999999999147 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+54 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string ID"
+"minimumSize" "75 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  42.50000000000023 106.4999999999991 271.4999999999976 131.4999999999991
+5 Label
+0
+E14 57
+"input_ID"
+"WF"
+1 94.49999999999767 125.4102564102554 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+55 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  92.49999999999756 116.9999999999991 450.4999999999976 145.9999999999992
+2 "0s" 0 0 0 0 0 -1  E E E
+13 58
+"restore_testRunner_ID"
+"WF"
+1 473.5000000000002 123.9239130434784 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+56 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  471.5000000000002 119.7500000000001 500.4999999999993 148.7499999999993
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+E E E E
+13 59
+"PUSH_BUTTON39"
+""
+1 498 122 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+57 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  496 117.8260869565218 525 146.826086956521
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+29 60
+"testSuite_name"
+""
+1 590 10 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+58 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Name"
+"minimumSize" "75 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  579.0000000000002 114.5 807.9999999999975 139.5
+5 Label
+0
+E14 61
+"input_name"
+"WF"
+1 815.0000000000003 120.9102564102563 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+59 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  813.0000000000002 112.5 1171 141.5000000000001
+2 "0s" 0 0 0 0 0 -1  E E E
+13 62
+"resotre_testRunner_name"
+"WF"
+1 1169 117.1739130434784 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+60 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  1167 113.0000000000001 1195.999999999999 141.9999999999993
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+E E E E
+13 63
+"PUSH_BUTTON41"
+""
+1 1201 117.1739130434783 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+61 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  1199 113.0000000000001 1228 141.9999999999993
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+29 68
+"testSuite_config"
+""
+1 85.49999999999955 56 E E E 1 E 0 E N "WF_Text" E N "_Transparent" E E
+ E E
+66 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Config"
+"minimumSize" "75 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  74.49999999999974 160.5 303.499999999997 185.5
+5 Label
+0
+E14 69
+"input_config"
+"WF"
+1 310.4999999999999 166.9102564102563 E E E 1 E 0 E N "_WindowText" E N "_Window" E E
+ E E
+67 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  308.4999999999998 158.5 666.4999999999998 187.5000000000001
+2 "0s" 0 0 0 0 0 -1  E E E
+13 70
+"restore_testRunner_description"
+"WF"
+1 664.4999999999998 163.1739130434784 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+68 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  662.4999999999998 159.0000000000001 691.4999999999989 187.9999999999993
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+E E E E
+13 71
+"PUSH_BUTTON45"
+""
+1 696.4999999999998 163.1739130434783 E E E 0 E 0 E N "_Transparent" E N "_Transparent" E E
+ E E
+69 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  694.4999999999998 159.0000000000001 723.4999999999998 187.9999999999993
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+29 72
+"Label1"
+""
+1 85.74999999999943 115.0000000000001 E E E 1 E 1 E N "WF_Text" E N "_Transparent" E E
+ E E
+70 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+6
+"contextMenuPolicy" "enum 1"
+"frameShape" "enum 0"
+"text" "string Descrtiption"
+"minimumSize" "75 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  74.74999999999963 219.5000000000001 303.7499999999969 244.5000000000001
+5 Label
+0
+E14 73
+"input_description"
+"WF"
+1 310.7499999999998 225.9102564102564 E E E 1 E 1 E N "_WindowText" E N "_Window" E E
+ E E
+71 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "-1 26"
+"maximumSize" "-1 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10001 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+LANG:10027 35 Arial,-1,13,5,50,0,0,0,0,0,Standard
+0  308.7499999999997 217.5000000000001 666.7499999999997 246.5000000000002
+2 "0s" 0 0 0 0 0 -1  E E E
+13 74
+"PUSH_BUTTON46"
+"WF"
+1 664.7499999999997 222.1739130434784 E E E 1 E 0 E N "_ButtonText" E N "_Button" E E
+ E E
+72 0 0 0 0 0
+E E E
+8
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  662.7499999999997 218.0000000000002 691.7499999999987 246.9999999999993
+
+P 
+4294967295
+"pictures/wf/buttons/undo.png"
+3
+LANG:10000 12 PUSH_BUTTON1
+LANG:10001 12 PUSH_BUTTON1
+LANG:10027 12 PUSH_BUTTON1
+E E E E
+13 75
+"PUSH_BUTTON47"
+""
+1 696.7499999999997 222.1739130434784 E E E 0 E 1 E N "_Transparent" E N "_Transparent" E E
+ E E
+73 0 0 0 0 0
+E E E
+1
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"minimumSize" "26 26"
+"maximumSize" "26 26"
+"layoutAlignment" "AlignNone"
+3
+LANG:10000 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10001 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+LANG:10027 30 Noto Sans,-1,16,5,50,0,0,0,0,0
+0  694.7499999999997 218.0000000000002 723.7499999999997 246.9999999999993
+
+T 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+E E E E
+32 76
+"SPACER4"
+""
+1 440 360 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+74 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"transparentForMouse" ""
+"sizePolicy" "Ignored Expanding"
+"layoutAlignment" "AlignNone"
+ 440 360 530 410 2
+0
+LAYER, 1 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 2 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 3 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 4 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 5 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 6 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 7 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+4 13 "LAYOUT_GROUP43" 16
+4 0 
+56 57 58 59 
+
+"S 56" "0 0 1 1"
+"S 57" "1 0 1 1"
+"S 58" "2 0 1 1"
+"S 59" "3 0 1 1"
+"" ""
+0 1 0 0
+4 14 "LAYOUT_GROUP44" 16
+4 0 
+60 61 62 63 
+
+"S 60" "0 0 1 1"
+"S 61" "1 0 1 1"
+"S 62" "2 0 1 1"
+"S 63" "3 0 1 1"
+"" ""
+0 1 0 0
+4 15 "LAYOUT_GROUP45" 18
+4 0 
+68 69 70 71 
+
+"S 68" "0 0 1 1"
+"S 69" "1 0 1 1"
+"S 70" "2 0 1 1"
+"S 71" "3 0 1 1"
+"" ""
+0 1 0 0
+4 16 "LAYOUT_GROUP48" 18
+0 2 
+
+13 14 
+"G 13" "0 0 1 1"
+"G 14" "1 0 1 1"
+"" ""
+0 1 0 0
+4 17 "LAYOUT_GROUP51" 18
+4 0 
+72 73 74 75 
+
+"S 72" "0 0 1 1"
+"S 73" "1 0 1 1"
+"S 74" "2 0 1 1"
+"S 75" "3 0 1 1"
+"" ""
+0 1 0 0
+4 18 "LAYOUT_GROUP52" -1
+1 3 
+76 
+15 16 17 
+"S 76" "3 0 1 1"
+"G 15" "1 0 1 1"
+"G 16" "0 0 1 1"
+"G 17" "2 0 1 1"
+"" ""
+0 2 0 0
+0

@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+
+# WinCC OA runtime artifacts (common)
+log/
+tmp/
+*.log
+
+# Node
+node_modules/

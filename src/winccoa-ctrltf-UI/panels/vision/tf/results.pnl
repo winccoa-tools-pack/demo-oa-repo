@@ -1,0 +1,171 @@
+V 14
+3
+LANG:10000 10 testResult
+LANG:10001 10 testResult
+LANG:10027 10 testResult
+PANEL,-1 -1 1399 907 N "_3DFace" 0
+"main()
+{
+  splitter.addModule(\"testResultTreeModule\");
+  splitter.addModule(\"testResultTableModule\");
+
+  dyn_int sizes = jsonDecode(globalStorage.getValue(\"testResult_splitter_sizes\", \"[]\"));
+
+  if ( dynlen(sizes) > 0 )
+    splitter.setSizes(sizes);
+
+  rootPanelOnModule(\"vision/tf/objects/resultsTree\", \"testResultTree\", \"testResultTreeModule\", \"\");
+  rootPanelOnModule(\"vision/tf/objects/resultsTable\", \"testResultTable\", \"testResultTableModule\", \"\");
+
+  splitter.setMinimumSize(\"testResultTreeModule\", 100);
+  splitter.setCollapsible(\"testResultTreeModule\", FALSE);
+}
+" 0
+ E E E E 1 -1 -1 0  10 0
+""0  1
+E "#uses \"classes/globalStorage/GlobalStorage\"
+
+GlobalStorage globalStorage = GlobalStorage(\"vision_tf\");
+" 0
+ 5
+"CBRef" "1"
+"EClose" E
+"type" "WF"
+"dpi" "120"
+"pdpi" "141.951"
+2 1 0 0 0 0 1 0
+""
+DISPLAY_LAYER, 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+LAYER, 0 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+29 5
+"splitter"
+"WF"
+1 -10 20 E E E 1 E 1 E N "WF_Text" E N "WF_HeadLine" E E
+ E E
+4 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+9
+"lineWidth" "int 2"
+"styleSheet" "string QWidget#splitter{font-family: \"Noto Sans\"; font-size: 17px; font-style: normal; font-weight: 400; }QWidget#splitter:enabled {background: #ffaaaa96; color: #ff505a64; }"
+"handleWidth" "int 2"
+"frameShape" "enum 1"
+"tabletTracking" "bool TRUE"
+"frameShadow" "enum 16"
+"sizePolicy" "Preferred MinimumExpanding"
+"layoutAlignment" "AlignNone"
+"snapMode" "Line"
+3
+LANG:10000 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+LANG:10001 38 Noto Sans,-1,17,5,50,0,0,0,0,0,Regular
+LANG:10027 35 MS Shell Dlg 2,-1,13,5,50,0,0,0,0,0
+0  172.5 50.76923076923077 902.5 290.7692307692308
+8 Splitter
+1
+0 "splitterMoved" "(int pos, int idx)"
+"  globalStorage.setValue(\"testResult_splitter_sizes\", jsonEncode(splitter.getSizes(), TRUE));"
+E6 11
+"RECTANGLE1"
+""
+1 0 708.0000000000003 E E E 1 E 1 E N "WF_BtnBottomPanelFore" E N "WF_BtnBottomPanelBack" E E
+ E E
+9 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+5
+"minimumSize" "-1 56"
+"sizePolicy" "Preferred Preferred"
+"layoutAlignment" "AlignNone"
+"dashclr"N "_Transparent"
+"antiAliased" "0"
+E E 0 1 1 2 1 E 0.6937392277207652 0 1.515304618752894 190 -672.8356700770494 1 E 0 708 1008 747
+32 12
+"SPACER1"
+""
+1 230 420 E E E 1 E 1 E N {0,0,0} E N {255,255,255} E E
+ E E
+10 0 0 0 0 0
+E E E
+0
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+
+3
+"transparentForMouse" ""
+"sizePolicy" "Expanding Ignored"
+"layoutAlignment" "AlignNone"
+ 230 420 270 440 1
+0
+LAYER, 1 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 2 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 3 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 4 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 5 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 6 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+LAYER, 7 
+3
+LANG:10000 0 
+LANG:10001 0 
+LANG:10027 0 
+0
+4 0 "LAYOUT_GROUP4" -1
+2 0 
+11 12 
+
+"S 12" "0 0 1 1"
+"" ""
+1 1 0 0
+4 1 "LAYOUT_GROUP5" -1
+1 0 
+5 
+
+"S 5" "0 0 1 1"
+"" ""
+0 1 0 0
+0
