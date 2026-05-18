@@ -2,9 +2,7 @@ name: WinCC OA Syntax Check
 
 on:
   push:
-    branches: ["**"]
   pull_request:
-    branches: ["**"]
 
 jobs:
   syntax-check:
@@ -18,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Login to GHCR
-      # Required if your WinCC OA image is private
+        # Required if your WinCC OA image is private
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
