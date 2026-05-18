@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run syntax check
-        uses: winccoa-tools-pack/winccoa-tools-pack/oalint-ci-gh@main
+        uses: ./.github/actions/winccoa-syntax-check
         with:
           path: "src/winccoa-ctrltf-UI"
           winccoa-version: "3.20"
