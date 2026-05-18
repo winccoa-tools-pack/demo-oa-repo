@@ -23,6 +23,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT != '' && secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
 
+      - name: Pull WinCC OA image
+        run: docker pull ghcr.io/winccoa-tools-pack/winccoa:latest
+
       - name: Run syntax check
         uses: ./.github/actions/winccoa-syntax-check
         with:
