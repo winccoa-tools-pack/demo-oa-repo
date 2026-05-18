@@ -85,37 +85,43 @@ runs:
           exit 2
         fi
 
-        set +e
-        OUTPUT=$(docker run --rm \
-          --shm-size=2g \
-          -v "$GITHUB_WORKSPACE":"$WORKDIR":rw \
-          -w "$WORKDIR" \
-          "$DOCKER_IMAGE" \
-          bash -lc '
-            set -euo pipefail
-            OA_PATH="/opt/WinCC_OA/'"$OA_VERSION"'"
-            PROJ_PATH="'"$WORKDIR"'/'"$PROJECT_PATH_NORM"'"
-            CONFIG_SRC="'"$WORKDIR"'/'"$CONFIG_IN_REPO"'"
-            CONFIG_TMP="/tmp/winccoa-config"
+          set +e
+          OUTPUT=$(docker run --rm \
+            --shm-size=2g \
+            -v "$GITHUB_WORKSPACE":"$WORKDIR":rw \
+            -w "$WORKDIR" \
+            -e OA_VERSION="$OA_VERSION" \
+            -e MODE="$MODE" \
+            -e INTEGRITY="$INTEGRITY" \
+            -e TIMEOUT_MS="$TIMEOUT_MS" \
+            -e PROJECT_PATH_NORM="$PROJECT_PATH_NORM" \
+            -e CONFIG_IN_REPO="$CONFIG_IN_REPO" \
+            "$DOCKER_IMAGE" \
+            bash -lc '
+              set -euo pipefail
+              OA_PATH="/opt/WinCC_OA/${OA_VERSION}"
+              PROJ_PATH="/workspace/${PROJECT_PATH_NORM}"
+              CONFIG_SRC="/workspace/${CONFIG_IN_REPO}"
+              CONFIG_TMP="/tmp/winccoa-config"
 
-            echo "Node: $(node -v)"
-            echo "npm:  $(npm -v)"
-            echo "OA path: $OA_PATH"
-            echo "Project: $PROJ_PATH"
+              echo "Node: $(node -v)"
+              echo "npm:  $(npm -v)"
+              echo "OA path: $OA_PATH"
+              echo "Project: $PROJ_PATH"
 
-            cp "$CONFIG_SRC" "$CONFIG_TMP"
-            sed -i "s|<WinCC_OA_PATH>|$OA_PATH|g; s|<WinCC_OA_VERSION>|'"$OA_VERSION"'|g; s|<PROJECT_PATH>|$PROJ_PATH|g" "$CONFIG_TMP" || true
+              cp "$CONFIG_SRC" "$CONFIG_TMP"
+              sed -i "s|<WinCC_OA_PATH>|$OA_PATH|g; s|<WinCC_OA_VERSION>|$OA_VERSION|g; s|<PROJECT_PATH>|$PROJ_PATH|g" "$CONFIG_TMP" || true
 
-            npm install -g @winccoa-tools-pack/npm-winccoa-syntax-check@latest
+              npm install -g @winccoa-tools-pack/npm-winccoa-syntax-check@latest
 
-            ARGS=("-v" "'"$OA_VERSION"'" "-c" "$CONFIG_TMP" "-m" "'"$MODE"'" "-t" "'"$TIMEOUT_MS"'")
-            if [ "'"$INTEGRITY"'" = "true" ]; then
-              ARGS+=("-i")
-            fi
+              ARGS=("-v" "$OA_VERSION" "-c" "$CONFIG_TMP" "-m" "$MODE" "-t" "$TIMEOUT_MS")
+              if [ "$INTEGRITY" = "true" ]; then
+                ARGS+=("-i")
+              fi
 
-            echo "Running: winccoa-syntax-check ${ARGS[*]}"
-            winccoa-syntax-check "${ARGS[@]}"
-          ' 2>&1)
+              echo "Running: winccoa-syntax-check ${ARGS[*]}"
+              winccoa-syntax-check "${ARGS[@]}"
+            ' 2>&1)
         EXIT_CODE=$?
         set -e
 
