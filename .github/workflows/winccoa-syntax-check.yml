@@ -27,7 +27,7 @@ jobs:
         uses: ./.github/actions/winccoa-syntax-check
         with:
           path: "src/winccoa-ctrltf-UI"
-          winccoa-version: "3.20"
+          winccoa-version: "3.21"
           docker-image: "ghcr.io/winccoa-tools-pack/winccoa:latest"
           fail-on-error: "true"
           mode: "all"
