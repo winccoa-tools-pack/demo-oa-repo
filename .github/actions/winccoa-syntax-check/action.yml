@@ -2,153 +2,153 @@ name: "WinCC OA Syntax Check (Demo)"
 description: "Runs @winccoa-tools-pack/npm-winccoa-syntax-check inside a WinCC OA Docker image (requires Node/npm in image)."
 
 inputs:
-	path:
-		description: "Path to WinCC OA project root (relative to repository root)"
-		required: false
-		default: "."
+  path:
+    description: "Path to WinCC OA project root (relative to repository root)"
+    required: false
+    default: "."
 
-	fail-on-error:
-		description: "Fail workflow on syntax errors"
-		required: false
-		default: "true"
+  fail-on-error:
+    description: "Fail workflow on syntax errors"
+    required: false
+    default: "true"
 
-	docker-image:
-		description: "GHCR WinCC OA image to run the check in (must include node+npm)"
-		required: false
-		default: "ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all"
+  docker-image:
+    description: "GHCR WinCC OA image to run the check in (must include node+npm)"
+    required: false
+    default: "ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all"
 
-	winccoa-version:
-		description: "WinCC OA install directory version (major.minor), e.g. 3.21"
-		required: true
+  winccoa-version:
+    description: "WinCC OA install directory version (major.minor), e.g. 3.21"
+    required: true
 
-	config:
-		description: "Path to project config file (relative to repo root). Default: <path>/config/config"
-		required: false
-		default: ""
+  config:
+    description: "Path to project config file (relative to repo root). Default: <path>/config/config"
+    required: false
+    default: ""
 
-	mode:
-		description: "Check mode: all, scripts, panels"
-		required: false
-		default: "all"
+  mode:
+    description: "Check mode: all, scripts, panels"
+    required: false
+    default: "all"
 
-	integrity:
-		description: "If true, performs integrity check"
-		required: false
-		default: "false"
+  integrity:
+    description: "If true, performs integrity check"
+    required: false
+    default: "false"
 
-	timeout-ms:
-		description: "Timeout in milliseconds"
-		required: false
-		default: "60000"
+  timeout-ms:
+    description: "Timeout in milliseconds"
+    required: false
+    default: "60000"
 
 outputs:
-	error-count:
-		description: "Number of detected syntax errors (best-effort parsing)"
-		value: ${{ steps.run.outputs.error-count }}
+  error-count:
+    description: "Number of detected syntax errors (best-effort parsing)"
+    value: ${{ steps.run.outputs.error-count }}
 
 runs:
-	using: "composite"
-	steps:
-		- name: Run syntax check in container
-			id: run
-			shell: bash
-			env:
-				PROJECT_PATH: ${{ inputs.path }}
-				FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
-				DOCKER_IMAGE: ${{ inputs.docker-image }}
-				OA_VERSION: ${{ inputs.winccoa-version }}
-				CONFIG_INPUT: ${{ inputs.config }}
-				MODE: ${{ inputs.mode }}
-				INTEGRITY: ${{ inputs.integrity }}
-				TIMEOUT_MS: ${{ inputs.timeout-ms }}
-			run: |
-				set -euo pipefail
+  using: "composite"
+  steps:
+    - name: Run syntax check in container
+      id: run
+      shell: bash
+      env:
+        PROJECT_PATH: ${{ inputs.path }}
+        FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
+        DOCKER_IMAGE: ${{ inputs.docker-image }}
+        OA_VERSION: ${{ inputs.winccoa-version }}
+        CONFIG_INPUT: ${{ inputs.config }}
+        MODE: ${{ inputs.mode }}
+        INTEGRITY: ${{ inputs.integrity }}
+        TIMEOUT_MS: ${{ inputs.timeout-ms }}
+      run: |
+        set -euo pipefail
 
-				WORKDIR=/workspace
-				PROJECT_PATH_NORM="${PROJECT_PATH#./}"
-				if [ -z "$PROJECT_PATH_NORM" ]; then
-					PROJECT_PATH_NORM="."
-				fi
+        WORKDIR=/workspace
+        PROJECT_PATH_NORM="${PROJECT_PATH#./}"
+        if [ -z "$PROJECT_PATH_NORM" ]; then
+          PROJECT_PATH_NORM="."
+        fi
 
-				if [ -n "${CONFIG_INPUT}" ]; then
-					CONFIG_IN_REPO="${CONFIG_INPUT#./}"
-				else
-					if [ "$PROJECT_PATH_NORM" = "." ]; then
-						CONFIG_IN_REPO="config/config"
-					else
-						CONFIG_IN_REPO="$PROJECT_PATH_NORM/config/config"
-					fi
-				fi
+        if [ -n "${CONFIG_INPUT}" ]; then
+          CONFIG_IN_REPO="${CONFIG_INPUT#./}"
+        else
+          if [ "$PROJECT_PATH_NORM" = "." ]; then
+            CONFIG_IN_REPO="config/config"
+          else
+            CONFIG_IN_REPO="$PROJECT_PATH_NORM/config/config"
+          fi
+        fi
 
-				if [ ! -f "$GITHUB_WORKSPACE/$CONFIG_IN_REPO" ]; then
-					echo "::error::Config file not found: $CONFIG_IN_REPO"
-					exit 2
-				fi
+        if [ ! -f "$GITHUB_WORKSPACE/$CONFIG_IN_REPO" ]; then
+          echo "::error::Config file not found: $CONFIG_IN_REPO"
+          exit 2
+        fi
 
-				set +e
-				OUTPUT=$(docker run --rm \
-					--shm-size=2g \
-					-v "$GITHUB_WORKSPACE":"$WORKDIR":rw \
-					-w "$WORKDIR" \
-					-e OA_VERSION="$OA_VERSION" \
-					-e MODE="$MODE" \
-					-e INTEGRITY="$INTEGRITY" \
-					-e TIMEOUT_MS="$TIMEOUT_MS" \
-					-e PROJECT_PATH_NORM="$PROJECT_PATH_NORM" \
-					-e CONFIG_IN_REPO="$CONFIG_IN_REPO" \
-					"$DOCKER_IMAGE" \
-					bash -lc '
-						set -euo pipefail
+        set +e
+        OUTPUT=$(docker run --rm \
+          --shm-size=2g \
+          -v "$GITHUB_WORKSPACE":"$WORKDIR":rw \
+          -w "$WORKDIR" \
+          -e OA_VERSION="$OA_VERSION" \
+          -e MODE="$MODE" \
+          -e INTEGRITY="$INTEGRITY" \
+          -e TIMEOUT_MS="$TIMEOUT_MS" \
+          -e PROJECT_PATH_NORM="$PROJECT_PATH_NORM" \
+          -e CONFIG_IN_REPO="$CONFIG_IN_REPO" \
+          "$DOCKER_IMAGE" \
+          bash -lc '
+            set -euo pipefail
 
-						if ! command -v node >/dev/null 2>&1; then
-							echo "::error::node not found in image; use a *-node* CI image tag (Option A)"
-							exit 127
-						fi
-						if ! command -v npm >/dev/null 2>&1; then
-							echo "::error::npm not found in image; use a *-node* CI image tag (Option A)"
-							exit 127
-						fi
+            if ! command -v node >/dev/null 2>&1; then
+              echo "::error::node not found in image; rebuild/publish the WinCC OA image with nodejs installed"
+              exit 127
+            fi
+            if ! command -v npm >/dev/null 2>&1; then
+              echo "::error::npm not found in image; rebuild/publish the WinCC OA image with nodejs installed"
+              exit 127
+            fi
 
-						OA_PATH="/opt/WinCC_OA/${OA_VERSION}"
-						PROJ_PATH="/workspace/${PROJECT_PATH_NORM}"
-						CONFIG_SRC="/workspace/${CONFIG_IN_REPO}"
-						CONFIG_TMP="/tmp/winccoa-config"
+            OA_PATH="/opt/WinCC_OA/${OA_VERSION}"
+            PROJ_PATH="/workspace/${PROJECT_PATH_NORM}"
+            CONFIG_SRC="/workspace/${CONFIG_IN_REPO}"
+            CONFIG_TMP="/tmp/winccoa-config"
 
-						echo "Node: $(node -v)"
-						echo "npm:  $(npm -v)"
-						echo "OA path: $OA_PATH"
-						echo "Project: $PROJ_PATH"
+            echo "Node: $(node -v)"
+            echo "npm:  $(npm -v)"
+            echo "OA path: $OA_PATH"
+            echo "Project: $PROJ_PATH"
 
-						cp "$CONFIG_SRC" "$CONFIG_TMP"
-						sed -i "s|<WinCC_OA_PATH>|$OA_PATH|g; s|<WinCC_OA_VERSION>|$OA_VERSION|g; s|<PROJECT_PATH>|$PROJ_PATH|g" "$CONFIG_TMP" || true
+            cp "$CONFIG_SRC" "$CONFIG_TMP"
+            sed -i "s|<WinCC_OA_PATH>|$OA_PATH|g; s|<WinCC_OA_VERSION>|$OA_VERSION|g; s|<PROJECT_PATH>|$PROJ_PATH|g" "$CONFIG_TMP" || true
 
-						npm install -g @winccoa-tools-pack/npm-winccoa-syntax-check@latest
+            npm install -g @winccoa-tools-pack/npm-winccoa-syntax-check@latest
 
-						ARGS=("-v" "$OA_VERSION" "-c" "$CONFIG_TMP" "-m" "$MODE" "-t" "$TIMEOUT_MS")
-						if [ "$INTEGRITY" = "true" ]; then
-							ARGS+=("-i")
-						fi
+            ARGS=("-v" "$OA_VERSION" "-c" "$CONFIG_TMP" "-m" "$MODE" "-t" "$TIMEOUT_MS")
+            if [ "$INTEGRITY" = "true" ]; then
+              ARGS+=("-i")
+            fi
 
-						echo "Running: winccoa-syntax-check ${ARGS[*]}"
-						winccoa-syntax-check "${ARGS[@]}"
-					' 2>&1)
-				EXIT_CODE=$?
-				set -e
+            echo "Running: winccoa-syntax-check ${ARGS[*]}"
+            winccoa-syntax-check "${ARGS[@]}"
+          ' 2>&1)
+        EXIT_CODE=$?
+        set -e
 
-				ERROR_COUNT=$(echo "$OUTPUT" | grep -E ".+:[0-9]+:\s+.+" -c || true)
-				echo "$OUTPUT"
+        ERROR_COUNT=$(echo "$OUTPUT" | grep -E ".+:[0-9]+:\s+.+" -c || true)
+        echo "$OUTPUT"
 
-				{
-					echo "error-count=$ERROR_COUNT"
-				} >> "$GITHUB_OUTPUT"
+        {
+          echo "error-count=$ERROR_COUNT"
+        } >> "$GITHUB_OUTPUT"
 
-				if [ "$EXIT_CODE" -ne 0 ]; then
-					MSG="Syntax check failed (exit $EXIT_CODE). Parsed errors: $ERROR_COUNT"
-					if [ "$FAIL_ON_ERROR" = "true" ]; then
-						echo "::error::$MSG"
-						exit "$EXIT_CODE"
-					else
-						echo "::warning::$MSG"
-						exit 0
-					fi
-				fi
+        if [ "$EXIT_CODE" -ne 0 ]; then
+          MSG="Syntax check failed (exit $EXIT_CODE). Parsed errors: $ERROR_COUNT"
+          if [ "$FAIL_ON_ERROR" = "true" ]; then
+            echo "::error::$MSG"
+            exit "$EXIT_CODE"
+          else
+            echo "::warning::$MSG"
+            exit 0
+          fi
+        fi
