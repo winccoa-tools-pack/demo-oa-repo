@@ -113,6 +113,7 @@ runs:
             PROJ_PATH="/workspace/${PROJECT_PATH_NORM}"
             CONFIG_SRC="/workspace/${CONFIG_IN_REPO}"
             CONFIG_TMP="/tmp/winccoa-config"
+            CREATE_DB_BIN="$OA_PATH/bin/WCCOAtoolCreateDbSQLite"
 
             echo "Node: $(node -v)"
             echo "npm:  $(npm -v)"
@@ -121,6 +122,15 @@ runs:
 
             cp "$CONFIG_SRC" "$CONFIG_TMP"
             sed -i "s|<WinCC_OA_PATH>|$OA_PATH|g; s|<WinCC_OA_VERSION>|$OA_VERSION|g; s|<PROJECT_PATH>|$PROJ_PATH|g" "$CONFIG_TMP" || true
+
+            # Initialize SQLite database (non-interactive) — required by some WinCC OA tools.
+            # Note: WinCC OA tool help doesn't list -config, but it is supported.
+            if [ -x "$CREATE_DB_BIN" ]; then
+              echo "Creating SQLite DB: $CREATE_DB_BIN -config $CONFIG_TMP -empty -yes"
+              "$CREATE_DB_BIN" -config "$CONFIG_TMP" -empty -yes
+            else
+              echo "::warning::WCCOAtoolCreateDbSQLite not found at $CREATE_DB_BIN; skipping DB creation"
+            fi
 
             npm install -g @winccoa-tools-pack/npm-winccoa-syntax-check@latest
 
