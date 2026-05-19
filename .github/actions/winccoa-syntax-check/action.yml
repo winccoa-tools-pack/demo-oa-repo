@@ -15,8 +15,7 @@ inputs:
 	docker-image:
 		description: "GHCR WinCC OA image to run the check in (must include node+npm)"
 		required: false
-		# Option A: build a CI flavor image with Node installed
-		default: "ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all-node20"
+		default: "ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all"
 
 	winccoa-version:
 		description: "WinCC OA install directory version (major.minor), e.g. 3.21"
