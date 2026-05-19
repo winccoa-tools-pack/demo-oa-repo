@@ -103,24 +103,40 @@ runs:
               PROJ_PATH="/workspace/${PROJECT_PATH_NORM}"
               CONFIG_SRC="/workspace/${CONFIG_IN_REPO}"
               CONFIG_TMP="/tmp/winccoa-config"
+              UI_BIN="$OA_PATH/bin/WCCOAui"
 
-              echo "Node: $(node -v)"
-              echo "npm:  $(npm -v)"
               echo "OA path: $OA_PATH"
               echo "Project: $PROJ_PATH"
+              echo "UI bin:  $UI_BIN"
+
+              if [ ! -x "$UI_BIN" ]; then
+                echo "::error::WCCOAui not found or not executable: $UI_BIN"
+                exit 127
+              fi
 
               cp "$CONFIG_SRC" "$CONFIG_TMP"
               sed -i "s|<WinCC_OA_PATH>|$OA_PATH|g; s|<WinCC_OA_VERSION>|$OA_VERSION|g; s|<PROJECT_PATH>|$PROJ_PATH|g" "$CONFIG_TMP" || true
 
-              npm install -g @winccoa-tools-pack/npm-winccoa-syntax-check@latest
-
-              ARGS=("-v" "$OA_VERSION" "-c" "$CONFIG_TMP" "-m" "$MODE" "-t" "$TIMEOUT_MS")
+              SYNTAX_MODE="$MODE"
               if [ "$INTEGRITY" = "true" ]; then
-                ARGS+=("-i")
+                SYNTAX_MODE="${SYNTAX_MODE}+"
               fi
 
-              echo "Running: winccoa-syntax-check ${ARGS[*]}"
-              winccoa-syntax-check "${ARGS[@]}"
+              CMD=("$UI_BIN" \
+                -config "$CONFIG_TMP" \
+                -syntax "$SYNTAX_MODE" \
+                -n \
+                -log +stderr \
+                -platform minimal)
+
+              echo "Running: ${CMD[*]}"
+
+              if command -v xvfb-run >/dev/null 2>&1; then
+                # Some environments still require a virtual display even for syntax.
+                timeout "${TIMEOUT_MS}ms" xvfb-run -a "${CMD[@]}"
+              else
+                timeout "${TIMEOUT_MS}ms" "${CMD[@]}"
+              fi
             ' 2>&1)
         EXIT_CODE=$?
         set -e
