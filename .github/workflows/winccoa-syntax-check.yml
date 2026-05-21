@@ -8,6 +8,9 @@ jobs:
   syntax-check:
     runs-on: ubuntu-latest
 
+    env:
+      WINCCOA_IMAGE: ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all
+
     permissions:
       contents: read
       packages: read
@@ -24,14 +27,14 @@ jobs:
           password: ${{ secrets.GHCR_PAT != '' && secrets.GHCR_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Pull WinCC OA image
-        run: docker pull ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all
+        run: docker pull "$WINCCOA_IMAGE"
 
       - name: Run syntax check
         uses: ./.github/actions/winccoa-syntax-check
         with:
           path: "src/winccoa-ctrltf-UI"
           winccoa-version: "3.21"
-          docker-image: "ghcr.io/winccoa-tools-pack/winccoa:v3.21.3-debian12-all"
+          docker-image: "${{ env.WINCCOA_IMAGE }}"
           fail-on-error: "true"
           mode: "all"
           integrity: "false"

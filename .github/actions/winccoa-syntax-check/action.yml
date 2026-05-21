@@ -90,11 +90,11 @@ runs:
             set -euo pipefail
 
             if ! command -v node >/dev/null 2>&1; then
-              echo "::error::node not found in image; rebuild/publish the WinCC OA image with nodejs installed"
+              echo "::error::node not found in image; rebuild/publish the WinCC OA image with nodejs installed (e.g. build the image with install.node: true)"
               exit 127
             fi
             if ! command -v npm >/dev/null 2>&1; then
-              echo "::error::npm not found in image; rebuild/publish the WinCC OA image with nodejs installed"
+              echo "::error::npm not found in image; rebuild/publish the WinCC OA image with npm installed (e.g. build the image with install.node: true)"
               exit 127
             fi
 
